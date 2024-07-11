@@ -33,7 +33,7 @@ jobs:
       - uses: arduino/setup-task@v2
 
       - name: Bundle action ${{ matrix.actions }}
-        run: task ${{ matrix.actions }} bundle
+        run: task ${{ matrix.actions }}:bundle
 
       - name: Configure Git
         run: |
