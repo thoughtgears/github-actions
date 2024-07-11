@@ -30,6 +30,8 @@ jobs:
         with:
           go-version: stable
 
+      - uses: arduino/setup-task@v2
+
       - name: Bundle action ${{ matrix.actions }}
         run: task ${{ matrix.actions }} bundle
 
