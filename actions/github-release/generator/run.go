@@ -2,14 +2,20 @@ package generator
 
 import (
 	"context"
-	"time"
 
-	"github.com/sethvargo/go-githubactions"
+	"github.com/google/go-github/v63/github"
 )
 
-func Run(_ context.Context, inputs *Inputs) error {
-	now := time.Now().Format(inputs.TimeFormat)
-	githubactions.SetOutput("current_time", now)
-
+func (i *Inputs) Run() error {
+	ctx := context.TODO()
+	if _, _, err := i.client.Repositories.CreateRelease(ctx, i.Owner, i.Repo, &github.RepositoryRelease{
+		TagName:    &i.Version,
+		Name:       &i.ReleaseName,
+		Body:       &i.Body,
+		MakeLatest: &i.Latest,
+		Prerelease: &i.PreRelease,
+	}); err != nil {
+		return err
+	}
 	return nil
 }

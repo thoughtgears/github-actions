@@ -1,17 +1,17 @@
 package main
 
 import (
-	"context"
-
 	"github.com/sethvargo/go-githubactions"
 	"github.com/thoughtgears/github-actions/actions/github-release/generator"
 )
 
 func run() error {
-	ctx := context.Background()
 	action := githubactions.New()
-	inputs := generator.NewFromInputs(action)
-	return generator.Run(ctx, inputs)
+	config, err := generator.NewFromInputs(action)
+	if err != nil {
+		return err
+	}
+	return config.Run()
 }
 
 func main() {

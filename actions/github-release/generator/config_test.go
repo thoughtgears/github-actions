@@ -10,26 +10,69 @@ import (
 )
 
 func TestNewFromInputs(t *testing.T) {
-	action := githubactions.New()
-
-	timeInput := map[string]string{
-		"ANSIC":       "Mon Jan _2 15:04:05 2006",
-		"UnixDate":    "Mon Jan _2 15:04:05 MST 2006",
-		"RubyDate":    "Mon Jan 02 15:04:05 -0700 2006",
-		"RFC822":      "02 Jan 06 15:04 MST",
-		"RFC822Z":     "02 Jan 06 15:04 -0700",
-		"RFC850":      "Monday, 02-Jan-06 15:04:05 MST",
-		"RFC1123":     "Mon, 02 Jan 2006 15:04:05 MST",
-		"RFC1123Z":    "Mon, 02 Jan 2006 15:04:05 -0700",
-		"RFC3339":     "2006-01-02T15:04:05Z07:00",
-		"RFC3339Nano": "2006-01-02T15:04:05.999999999Z07:00",
-		"Kitchen":     "3:04PM",
+	envMap := map[string]string{
+		"INPUT_GITHUB_TOKEN": "gh_token",
+		"INPUT_RELEASE_NAME": "Action 1234 v1.0.0",
+		"INPUT_DESCRIPTION":  "Release description, body of the release",
+		"INPUT_LATEST":       "false",
+		"INPUT_PRERELEASE":   "true",
+		"GITHUB_REF":         "refs/tags/v1.0.0",
+		"GITHUB_REPOSITORY":  "octocat/hello-world",
 	}
 
-	for name, format := range timeInput {
-		os.Setenv("INPUT_TIME_FORMAT", name)
-		inputs := generator.NewFromInputs(action)
-		assert.Equal(t, format, inputs.TimeFormat)
-		os.Unsetenv("INPUT_TIME_FORMAT")
+	setEnv(envMap)
+	defer unsetEnv(envMap)
+
+	action := githubactions.New()
+
+	inputs, err := generator.NewFromInputs(action)
+	assert.NoError(t, err)
+	assert.Equal(t, envMap["INPUT_GITHUB_TOKEN"], inputs.GithubToken)
+	assert.Equal(t, envMap["INPUT_RELEASE_NAME"], inputs.ReleaseName)
+	assert.Equal(t, envMap["INPUT_DESCRIPTION"], inputs.Body)
+	assert.Equal(t, envMap["INPUT_LATEST"], inputs.Latest)
+	assert.True(t, inputs.PreRelease)
+	assert.Equal(t, "v1.0.0", inputs.Version)
+	assert.Equal(t, "octocat", inputs.Owner)
+	assert.Equal(t, "hello-world", inputs.Repo)
+
+}
+
+func TestNewFromInputsDefaults(t *testing.T) {
+	envMap := map[string]string{
+		"INPUT_github_token": "gh_token",
+		"INPUT_release_name": "Action 1234 v1.0.0",
+		"INPUT_description":  "Release description, body of the release",
+		"GITHUB_REF":         "refs/tags/v1.0.0",
+		"GITHUB_REPOSITORY":  "octocat/hello-world",
+	}
+
+	setEnv(envMap)
+	defer unsetEnv(envMap)
+
+	action := githubactions.New()
+
+	inputs, err := generator.NewFromInputs(action)
+	assert.NoError(t, err)
+	assert.Equal(t, envMap["INPUTS_github_token"], inputs.GithubToken)
+	assert.Equal(t, envMap["INPUTS_release_name"], inputs.ReleaseName)
+	assert.Equal(t, envMap["INPUTS_description"], inputs.ReleaseName)
+	assert.Equal(t, "true", inputs.Latest)
+	assert.False(t, inputs.PreRelease)
+	assert.Equal(t, "v1.0.0", inputs.Version)
+	assert.Equal(t, "octocat", inputs.Owner)
+	assert.Equal(t, "hello-world", inputs.Repo)
+
+}
+
+func setEnv(input map[string]string) {
+	for key, value := range input {
+		os.Setenv(key, value)
+	}
+}
+
+func unsetEnv(input map[string]string) {
+	for key := range input {
+		os.Unsetenv(key)
 	}
 }
