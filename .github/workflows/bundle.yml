@@ -1,0 +1,33 @@
+name: Bundle and Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        actions: ['']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Bundle all actions
+        working-directory: ./actions/${{ matrix.actions }}
+        run: task bundle
+
+      - name: Release version
+        uses: ./actions/release

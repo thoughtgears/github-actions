@@ -25,11 +25,11 @@ func TestNewFromInputs(t *testing.T) {
 		"RFC3339Nano": "2006-01-02T15:04:05.999999999Z07:00",
 		"Kitchen":     "3:04PM",
 	}
+
 	for name, format := range timeInput {
 		os.Setenv("INPUT_TIME_FORMAT", name)
 		inputs := generator.NewFromInputs(action)
 		assert.Equal(t, format, inputs.TimeFormat)
 		os.Unsetenv("INPUT_TIME_FORMAT")
 	}
-
 }

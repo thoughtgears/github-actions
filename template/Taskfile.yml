@@ -5,28 +5,43 @@ vars:
     sh: git rev-parse --verify HEAD
   VERSION:
     sh: cat .version
-
-silent: true
+  BASE_DIR:
+    sh: git rev-parse --show-toplevel
+  ACTION_NAME: template
 
 tasks:
   clean:
     cmds:
-      - rm -rf bin
+      - rm -rf bin/*
+
+  lint:
+    desc: Lint the GitHub Action {{ .ACTION_NAME }}
+    cmds:
+      - golangci-lint run -c {{ .BASE_DIR }}/.golangci.yml
+
+  test:
+    desc: Test the GitHub Action {{ .ACTION_NAME }}
+    cmds:
+      - go test -v ./...
+
   build:
     deps:
       - clean
     cmds:
-      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-linux-amd64-$(GIT_SHA)
-      - CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-linux-arm64-$(GIT_SHA)
-      - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-darwin-amd64-$(GIT_SHA)
-      - CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-darwin-arm64-$(GIT_SHA)
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-linux-amd64-{{ .GIT_SHA }}
+      - CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-linux-arm64-{{ .GIT_SHA }}
+      - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-darwin-amd64-{{ .GIT_SHA }}
+      - CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-darwin-arm64-{{ .GIT_SHA }}
+
   bundle:
+    desc: Bundle the GitHub Action {{ .ACTION_NAME }}
     deps:
       - build
     cmds:
-      - echo $(GIT_SHA) > .version
+      - echo {{ .GIT_SHA }} > .version
       - git add .version
-      - git commit -m "Bundle version $(GIT_SHA)"
+      - git add bin/*
+      - git commit -m "Bundle version {{ .GIT_SHA }}"
     generates:
       - .version
 

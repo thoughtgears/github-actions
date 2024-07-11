@@ -7,7 +7,7 @@ import (
 	"github.com/sethvargo/go-githubactions"
 )
 
-func Run(ctx context.Context, inputs *Inputs) error {
+func Run(_ context.Context, inputs *Inputs) error {
 	now := time.Now().Format(inputs.TimeFormat)
 	githubactions.SetOutput("current_time", now)
 

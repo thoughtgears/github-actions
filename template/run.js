@@ -28,6 +28,9 @@ function chooseBinary() {
     if (platform === 'darwin' && arch === 'arm64') {
         return `main-darwin-arm64-${VERSION}`
     }
+    if (platform === 'darwin' && arch === 'amd64') {
+        return `main-darwin-amd64-${VERSION}`
+    }
 
     console.error(`Unsupported platform (${platform}) and architecture (${arch})`)
     process.exit(1)
