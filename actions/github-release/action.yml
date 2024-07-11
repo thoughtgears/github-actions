@@ -1,0 +1,24 @@
+name: 'Thoughtgears GitHub Release'
+description: 'Releases interesting things to GitHub'
+author: 'Thoughtgears'
+
+inputs:
+  github_token:
+    description: 'The GitHub token'
+    required: true
+  release_name:
+    description: 'The release name'
+    required: true
+  release_body:
+    description: 'The release body'
+    default: ' '
+  latest:
+    description: 'Set to true to create a latest release'
+    default: 'true'
+  prerelease:
+    description: 'Set to true to create a prerelease'
+    default: 'false'
+
+runs:
+  using: node20
+  main: run.js

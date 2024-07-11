@@ -6,7 +6,9 @@ includes:
   template:
     dir: template
     taskfile: template/Taskfile.yml
-
+  github-release:
+    dir: actions/github-release
+    taskfile: actions/github-release/Taskfile.yml
 
 tasks:
   default:
@@ -16,6 +18,7 @@ tasks:
     desc: 'Scaffolds a new GitHub Action from the template | Usage: task scaffold -- my-action'
     silent: true
     cmds:
+      - echo "Scaffolding a new GitHub Action {{ .CLI_ARGS }} from the template"
       - mkdir -p actions/{{ .CLI_ARGS }} && cp -r template/* actions/{{ .CLI_ARGS }}
       - sed -i '' 's#module github.com/thoughtgears/github-actions/template#module github.com/thoughtgears/github-actions/actions/{{ .CLI_ARGS }}#' actions/{{ .CLI_ARGS }}/go.mod
       - find actions/{{ .CLI_ARGS }} -name '*.go' -exec sed -i '' 's#github.com/thoughtgears/github-actions/template/generator#github.com/thoughtgears/github-actions/actions/{{ .CLI_ARGS }}/generator#g' {} +

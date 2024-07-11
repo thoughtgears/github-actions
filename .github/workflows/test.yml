@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        actions: ['']
+        actions: ['github-release']
 
     steps:
       - uses: actions/checkout@v4
@@ -28,13 +28,10 @@ jobs:
 
       - uses: arduino/setup-task@v2
 
+      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.59.1
+
       - name: Lint action ${{ matrix.actions }}
-        uses: golangci/golangci-lint-action@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          only-new-issues: true
-          working-directory: ./actions/${{ matrix.actions }}
-          args: --config=${{ github.workspace }}/.golangci.yml
+        run: task ${{ matrix.actions}}:lint
 
       - name: Test action ${{ matrix.actions }}
         run: task ${{ matrix.actions}}:test
