@@ -58,10 +58,10 @@ jobs:
           echo "release_body=${RELEASE_CONTENT}" >> $GITHUB_ENV
           echo "release_name=${VERSION_TAG}" >> $GITHUB_ENV
 
-      - name: Release ${{ matrix.actions }} version ${{ github.ref }}
+      - name: Release ${{ matrix.actions }}
         uses: ./actions/release
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_name: ${{ matrix.actions }} ${{ env.release_name }} # Get the action and the tag name
+          action: ${{ matrix.actions }}
           release_body: ${{ env.release_body }} # Get the changelog
 

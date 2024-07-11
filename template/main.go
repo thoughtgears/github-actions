@@ -11,7 +11,7 @@ func run() error {
 	ctx := context.Background()
 	action := githubactions.New()
 	inputs := generator.NewFromInputs(action)
-	return generator.Run(ctx, inputs)
+	return Run(ctx, inputs)
 }
 
 func main() {

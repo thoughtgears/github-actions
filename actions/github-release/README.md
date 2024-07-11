@@ -1,6 +1,6 @@
 # Thoughtgears GitHub Release
 
-This action releases interesting things to GitHub.
+This action releases the internal actions to GitHub
 
 ## Inputs
 
@@ -8,9 +8,9 @@ This action releases interesting things to GitHub.
 
 **Required** The GitHub token.
 
-### `release_name`
+### `action`
 
-**Required** The release name.
+**Required** The name of the action.
 
 ### `release_body`
 
