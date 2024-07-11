@@ -6,6 +6,11 @@ on:
       - main
     tags:
       - v*
+    paths-ignore:
+      - template/** # Ignore changes to the template directory
+      - .gitignore
+      - .github/workflows/test.yml
+      - .golangci.yml
 
 permissions:
   contents: write
@@ -38,6 +43,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git push
+
+# Set the body of the release to the commit message
+# awk "/^## \[${VERSION_TAG}\]/ {flag=1; next} /^## / {flag=0} flag {print}" actions/github-release/CHANGELOG.md
 
       - name: Release version
         if: github.ref == 'refs/tags/v*' # Only do releases on tags
