@@ -28,7 +28,7 @@ jobs:
 
       - uses: arduino/setup-task@v2
 
-      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v6.0.1
+      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
       - name: Lint action ${{ matrix.actions }}
         run: task ${{ matrix.actions}}:lint
