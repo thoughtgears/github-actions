@@ -7,28 +7,41 @@ on:
 
 
 jobs:
-  detect-changes:
-    runs-on: ubuntu-latest
-    outputs:
-      changed-actions: ${{ steps.changed-actions.outputs.actions }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Detect changed actions
-        id: changed-actions
-        run: |
-          CHANGED_ACTIONS=$(git diff --name-only HEAD~1 HEAD | grep '^actions/' | cut -d '/' -f 2 | sort | uniq)
-          echo "Changed actions: $CHANGED_ACTIONS"
-          echo "actions=$(echo $CHANGED_ACTIONS | jq -R -s -c 'split(\" \")')" >> $GITHUB_ENV
-
-  release:
-    needs: detect-changes
+  actions:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        actions: ${{ fromJson(needs.detect-changes.outputs.changed-actions) }}
+        actions: ['github-release']
+
+    outputs:
+      filtered_actions: ${{ steps.filter-actions.outputs.filtered_actions }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Filter actions by version tag
+        id: filter-actions
+        run: |
+          VERSION_TAG="echo ${{ github.ref }} | awk -F '/' '{print $NF}'"
+          FILTERED_ACTIONS=""
+          for action in ${{ matrix.actions }}
+          do
+            if grep -q "^## \[${VERSION_TAG}\]" "actions/$action/CHANGELOG.md"; then
+              FILTERED_ACTIONS="$FILTERED_ACTIONS $action"
+            fi
+          done
+          echo "Filtered actions: $FILTERED_ACTIONS"
+          echo "filtered_actions=$(echo $FILTERED_ACTIONS | jq -R -s -c 'split(\" \")')" >> $GITHUB_EN
+
+  release:
+    needs: filter-changed-actions
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        actions: ${{ fromJson(needs.actions.outputs.filtered_actions) }}
 
     steps:
       - name: Extract changelog content
@@ -43,6 +56,6 @@ jobs:
         uses: ./actions/release
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_name: ${{ env.release_name }} # Get the tag name
+          release_name: ${{ matrix.actions }} ${{ env.release_name }} # Get the action and the tag name
           release_body: ${{ env.release_body }} # Get the changelog
 
