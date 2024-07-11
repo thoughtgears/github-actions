@@ -1,0 +1,8 @@
+version: 3
+
+dotenv: ['.env', '{{.ENV}}/.env.', '{{.HOME}}/.env']
+
+includes:
+  template:
+    dir: template
+    taskfile: template/Taskfile.yml

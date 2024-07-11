@@ -1,0 +1,32 @@
+version: '3'
+
+vars:
+  GIT_SHA:
+    sh: git rev-parse --verify HEAD
+  VERSION:
+    sh: cat .version
+
+silent: true
+
+tasks:
+  clean:
+    cmds:
+      - rm -rf bin
+  build:
+    deps:
+      - clean
+    cmds:
+      - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-linux-amd64-$(GIT_SHA)
+      - CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-linux-arm64-$(GIT_SHA)
+      - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-darwin-amd64-$(GIT_SHA)
+      - CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -a -installsuffix cgo -ldflags="-s -w" -o bin/main-darwin-arm64-$(GIT_SHA)
+  bundle:
+    deps:
+      - build
+    cmds:
+      - echo $(GIT_SHA) > .version
+      - git add .version
+      - git commit -m "Bundle version $(GIT_SHA)"
+    generates:
+      - .version
+
