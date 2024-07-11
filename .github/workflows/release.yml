@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-actions: ${{ steps.changed-actions.outputs.actions }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect changed actions
+        id: changed-actions
+        run: |
+          CHANGED_ACTIONS=$(git diff --name-only HEAD~1 HEAD | grep '^actions/' | cut -d '/' -f 2 | sort | uniq)
+          echo "Changed actions: $CHANGED_ACTIONS"
+          echo "actions=$(echo $CHANGED_ACTIONS | jq -R -s -c 'split(\" \")')" >> $GITHUB_ENV
+
+  release:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        actions: ${{ fromJson(needs.detect-changes.outputs.changed-actions) }}
+
+    steps:
+      - name: Extract changelog content
+        id: extract-changelog
+        run: |
+          VERSION_TAG="echo ${{ github.ref }} | awk -F '/' '{print $NF}'"
+          RELEASE_CONTENT=$(awk "/^## \[${VERSION_TAG}\]/ {flag=1; next} /^## / {flag=0} flag {print}" actions/${{ matrix.actions }}/CHANGELOG.md)
+          echo "release_body=${RELEASE_CONTENT}" >> $GITHUB_ENV
+          echo "release_name=${VERSION_TAG}" >> $GITHUB_ENV
+
+      - name: Release ${{ matrix.actions }} version ${{ github.ref }}
+        uses: ./actions/release
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release_name: ${{ env.release_name }} # Get the tag name
+          release_body: ${{ env.release_body }} # Get the changelog
+
