@@ -37,10 +37,13 @@ tasks:
       - build
     cmds:
       - echo {{ .GIT_SHA }} > .version
-      - git rm -f bin/*
+      - git rm -f bin/main-*-{{ .OLD_VERSION }}
       - git add .version
       - git add bin/*
       - git commit -m "Bundle version {{ .GIT_SHA }}"
     generates:
       - .version
+    vars:
+      OLD_VERSION:
+        sh: cat .version
 
