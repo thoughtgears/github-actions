@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+    paths-ignore:
+    - template/** # Ignore changes to the template directory
+    - .gitignore
+    - .github/workflows/test.yml
+    - .github/workflows/bundle.yml
+    - .golangci.yml
 
 
 jobs:
@@ -36,7 +42,7 @@ jobs:
           echo "filtered_actions=$(echo $FILTERED_ACTIONS | jq -R -s -c 'split(\" \")')" >> $GITHUB_EN
 
   release:
-    needs: filter-changed-actions
+    needs: actions
     runs-on: ubuntu-latest
 
     strategy:
