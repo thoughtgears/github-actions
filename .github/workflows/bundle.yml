@@ -26,7 +26,18 @@ jobs:
           go-version: stable
 
       - name: Bundle action ${{ matrix.actions }}
-        run: task ${{ matrixs.actions }} bundle
+        run: task ${{ matrix.actions }} bundle
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push
 
       - name: Release version
         if: github.ref == 'refs/tags/v*' # Only do releases on tags
