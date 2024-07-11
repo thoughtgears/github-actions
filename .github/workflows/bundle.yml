@@ -8,6 +8,7 @@ on:
       - template/** # Ignore changes to the template directory
       - .gitignore
       - .github/workflows/test.yml
+      - .github/workflows/release.yml
       - .golangci.yml
 
 permissions:

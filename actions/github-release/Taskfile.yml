@@ -37,6 +37,7 @@ tasks:
       - build
     cmds:
       - echo {{ .GIT_SHA }} > .version
+      - git rm -f bin/*
       - git add .version
       - git add bin/*
       - git commit -m "Bundle version {{ .GIT_SHA }}"
