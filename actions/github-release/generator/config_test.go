@@ -35,7 +35,6 @@ func TestNewFromInputs(t *testing.T) {
 	assert.Equal(t, "v1.0.0", inputs.Version)
 	assert.Equal(t, "octocat", inputs.Owner)
 	assert.Equal(t, "hello-world", inputs.Repo)
-
 }
 
 func TestNewFromInputsDefaults(t *testing.T) {
@@ -62,7 +61,6 @@ func TestNewFromInputsDefaults(t *testing.T) {
 	assert.Equal(t, "v1.0.0", inputs.Version)
 	assert.Equal(t, "octocat", inputs.Owner)
 	assert.Equal(t, "hello-world", inputs.Repo)
-
 }
 
 func setEnv(input map[string]string) {
