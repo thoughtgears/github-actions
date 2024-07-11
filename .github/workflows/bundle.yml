@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        actions: ['']
+        actions: ['github-release']
 
     steps:
       - uses: actions/checkout@v4
@@ -25,9 +25,9 @@ jobs:
         with:
           go-version: stable
 
-      - name: Bundle all actions
-        working-directory: ./actions/${{ matrix.actions }}
-        run: task bundle
+      - name: Bundle action ${{ matrix.actions }}
+        run: task ${{ matrixs.actions }} bundle
 
       - name: Release version
+        if: github.ref == 'refs/tags/v*' # Only do releases on tags
         uses: ./actions/release

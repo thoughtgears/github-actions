@@ -1,0 +1,16 @@
+name: 'Change to the name of the action'
+description: 'Change to the description of the action'
+author: 'Thoughtgears'
+
+inputs:
+  time_format:
+    description: 'The time format you want to use in the output'
+    default: 'RFC822'
+
+outputs:
+  current_time:
+    description: 'The current time in the specified format'
+
+runs:
+  using: node20
+  main: run.js

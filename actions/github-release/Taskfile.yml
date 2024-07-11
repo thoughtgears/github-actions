@@ -5,7 +5,7 @@ vars:
     sh: git rev-parse --verify HEAD
   BASE_DIR:
     sh: git rev-parse --show-toplevel
-  ACTION_NAME: template
+  ACTION_NAME: github-release
 
 tasks:
   clean:
