@@ -32,13 +32,13 @@ jobs:
 
       - uses: arduino/setup-task@v2
 
-      - name: Bundle action ${{ matrix.actions }}
-        run: task ${{ matrix.actions }}:bundle
-
       - name: Configure Git
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bundle action ${{ matrix.actions }}
+        run: task ${{ matrix.actions }}:bundle
 
       - name: Push changes
         env:
