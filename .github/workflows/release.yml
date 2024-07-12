@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Release ${{ matrix.actions }}
-        uses: ./actions/release
+        uses: ./actions/github-release
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           action: ${{ matrix.actions }}
