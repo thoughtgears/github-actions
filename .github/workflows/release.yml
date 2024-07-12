@@ -14,7 +14,6 @@ on:
 
 jobs:
   release:
-    needs: actions
     runs-on: ubuntu-latest
 
     strategy:
