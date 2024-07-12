@@ -61,6 +61,34 @@ func TestNewFromInputsDefaults(t *testing.T) {
 	assert.Equal(t, "hello-world", inputs.Repo)
 }
 
+func TestInputs_EvaluateRelease(t *testing.T) {
+	inputs := &generator.Inputs{
+		Version:  "v1",
+		BasePath: "../../../",
+		Action:   "github-release",
+		Release:  false,
+	}
+
+	err := inputs.ChangeLog()
+	assert.NoError(t, err)
+	assert.True(t, inputs.Release)
+	assert.NotEmpty(t, inputs.Body)
+}
+
+func TestInputs_EvaluateReleaseFalse(t *testing.T) {
+	inputs := &generator.Inputs{
+		Version:  "v3",
+		BasePath: "../../../",
+		Action:   "github-release",
+		Release:  false,
+	}
+
+	err := inputs.ChangeLog()
+	assert.Error(t, err)
+	assert.Equal(t, "version mismatch: version v3 not found in changelog", err.Error())
+	assert.False(t, inputs.Release)
+}
+
 func setEnv(input map[string]string) {
 	for key, value := range input {
 		os.Setenv(key, value)

@@ -50,18 +50,9 @@ jobs:
         actions: ${{ fromJson(needs.actions.outputs.filtered_actions) }}
 
     steps:
-      - name: Extract changelog content
-        id: extract-changelog
-        run: |
-          VERSION_TAG="echo ${{ github.ref }} | awk -F '/' '{print $NF}'"
-          RELEASE_CONTENT=$(awk "/^## \[${VERSION_TAG}\]/ {flag=1; next} /^## / {flag=0} flag {print}" actions/${{ matrix.actions }}/CHANGELOG.md)
-          echo "release_body=${RELEASE_CONTENT}" >> $GITHUB_ENV
-          echo "release_name=${VERSION_TAG}" >> $GITHUB_ENV
-
       - name: Release ${{ matrix.actions }}
         uses: ./actions/release
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           action: ${{ matrix.actions }}
-          release_body: ${{ env.release_body }} # Get the changelog
 
