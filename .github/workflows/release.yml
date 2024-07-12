@@ -13,41 +13,13 @@ on:
 
 
 jobs:
-  actions:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        actions: ['github-release']
-
-    outputs:
-      filtered_actions: ${{ steps.filter-actions.outputs.filtered_actions }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Filter actions by version tag
-        id: filter-actions
-        run: |
-          VERSION_TAG="echo ${{ github.ref }} | awk -F '/' '{print $NF}'"
-          FILTERED_ACTIONS=""
-          for action in ${{ matrix.actions }}
-          do
-            if grep -q "^## \[${VERSION_TAG}\]" "actions/$action/CHANGELOG.md"; then
-              FILTERED_ACTIONS="$FILTERED_ACTIONS $action"
-            fi
-          done
-          echo "Filtered actions: $FILTERED_ACTIONS"
-          echo "filtered_actions=$(echo $FILTERED_ACTIONS | jq -R -s -c 'split(\" \")')" >> $GITHUB_EN
-
   release:
     needs: actions
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        actions: ${{ fromJson(needs.actions.outputs.filtered_actions) }}
+        actions: [ 'github-release' ]
 
     steps:
       - name: Release ${{ matrix.actions }}
