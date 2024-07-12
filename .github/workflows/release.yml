@@ -21,6 +21,7 @@ jobs:
         actions: [ 'github-release' ]
 
     steps:
+      - uses: actions/checkout@v4
       - name: Release ${{ matrix.actions }}
         uses: ./actions/release
         with:
